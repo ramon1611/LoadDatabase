@@ -1,0 +1,23 @@
+{
+    "name": "ramon1611/ticketsystem-loaddatabase",
+    "description": "LoadDatabase Class for Ticketsystem",
+    "type": "library",
+    "license": "CC-BY-SA-4.0",
+	"homepage": "https://github.com/ramon1611/LoadDatabase",
+	
+	"authors": [
+		{
+			"name":	"Ramon Rosin (ramon1611)",
+			"email": "rosin.ramon@gmail.com",
+			"role": "Developer"
+		}
+	],
+	
+	"autoload": {
+		"psr-4": {
+			"ramon1611\\Libs\\Ticket\\": "libs/ticket/"
+		}
+	},
+    
+	"require": {}
+}
