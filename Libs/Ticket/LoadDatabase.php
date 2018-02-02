@@ -5,7 +5,7 @@
  * File Created: Wednesday, 31st January 2018 9:54:48 am
  * Author: ramon1611
  * -----
- * Last Modified: Thursday, 1st February 2018 4:44:02 pm
+ * Last Modified: Friday, 2nd February 2018 9:26:28 am
  * Modified By: ramon1611
  */
 
@@ -66,7 +66,8 @@ class LoadDatabase {
     }
 
     /**
-     * Loads the given Tables from Database and returns them
+     * Loads the given tables from database and returns them as associative array like [ 'tableName' => _TABLE_DATA_ ].
+     * If only one table is given then it returns only the _TABLE_DATA_
      * 
      * @param array $dbTables Array of table names to load. Default is LoadDatabase::ALL_TABLES
      * @return array
@@ -77,8 +78,11 @@ class LoadDatabase {
         if ( $dbTables == $this::ALL_TABLES )
             $dbTables = $this->_db->getTables();
 
-        foreach ( $dbTables as $tableName )
-            $requiredTables[$tableName] = $this->loadTable( $tableName );
+        if ( count( $dbTables ) > 1 )
+            foreach ( $dbTables as $tableName )
+                $requiredTables[$tableName] = $this->loadTable( $tableName );
+        elseif ( count( $dbTables ) == 1 )
+            $requiredTables = $this->loadTable( $dbTables[0] );
 
         return $requiredTables;
     }
@@ -112,18 +116,19 @@ class LoadDatabase {
      * 
      * <pre>pattern of $dbTablesConditions:
      * [
-     *      'exampleTbl1' => [ 'example1ID' => 1 ],                         # Single Condition
-     *      'exampleTbl2' => [                                              # Multiple Conditions (default operator)
-     *                  'example2ID' => 9,
-     *                  'col2' => 'example'
+     *      'tbl1' => [ 'exampleID' => 1 ],                        # Single Condition
+     *                                                             -> SELECT * FROM tbl1 WHERE exampleID=1;
+     *      'tbl2' => [                                            # Multiple Conditions (default operator)
+     *                  'ID' => 9,                                 -> SELECT * FROM tbl2 WHERE
+     *                  'col2' => 'example'                           ID=9 AND col2='example';
      *      ],
-     *      'exampleTbl3' => [                                              # Multiple Conditions with custom operator
-     *                  '::ConditionOperator::' => 'OR',
-     *                  't3ID'    => 9,
-     *                  'default' => 1
+     *      'tbl3' => [                                            # Multiple Conditions with custom operator
+     *                  '::ConditionOperator::' => 'OR',           -> SELECT * FROM tbl3 WHERE
+     *                  't3ID'    => 9,                               t3ID=9 OR
+     *                  'default' => 1                                default=1;
      *      ],
-     *      'exampleTbl4' => [ '::CustomCondition::' => 'name = \'test\'' ] # Custom Condition string
-     * ]</pre>
+     *      'tbl4' => [ '::CustomCondition::' => 'name=\'test\'' ] # Custom Condition string
+     * ]                                                           -> SELECT * FROM tbl4 WHERE name='test';</pre>
      * 
      * @used-by LoadDatabase::requireRowsByID()
      * @uses LoadDatabase::_parseConditions() To parse the conditions array
@@ -135,7 +140,7 @@ class LoadDatabase {
 
         foreach ( $dbTablesConditions as $table => $conditions ) {
             $conditionStr = $this->_parseConditions( $conditions );
-            $sql = $this->_db->query( $this->_query->select( $this->_db->quote( $table ), SQLQueryBuilder::SELECT_ALL_COLUMNS, false ).' '.
+            $sql = $this->_db->query( $this->_query->select( $this->_db->quote( $table ), \ramon1611\Libs\SQLQueryBuilder::SELECT_ALL_COLUMNS, false ).' '.
                                       $this->_query->where( $conditionStr ) );
             
             if ( $sql ) {
@@ -192,7 +197,7 @@ class LoadDatabase {
      * @return array
      */
     private function loadTable( string $tableName ) {
-        $sql = $this->_db->query( $this->_query->select( $this->_db->quote( $tableName ), SQLQueryBuilder::SELECT_ALL_COLUMNS ) );
+        $sql = $this->_db->query( $this->_query->select( $this->_db->quote( $tableName ), \ramon1611\Libs\SQLQueryBuilder::SELECT_ALL_COLUMNS ) );
         if ( $sql ) {
             $thisResults = NULL;
             

@@ -43,13 +43,13 @@ LoadDatabase::__construct( mixed $dbObject = NULL, mixed $queryGenerator = NULL,
 
 ### requireTables
 
-Loads the given Tables from Database and returns them
+Loads the given tables from database and returns them as associative array like [ 'tableName' => _TABLE_DATA_ ].
 
 ```php
 LoadDatabase::requireTables( array $dbTables = self::ALL_TABLES ): array
 ```
 
-
+If only one table is given then it returns only the _TABLE_DATA_
 
 
 **Parameters:**
@@ -103,18 +103,19 @@ LoadDatabase::requireRowsByCondition( array $dbTablesConditions ): array
 
 <pre>pattern of $dbTablesConditions:
 [
-     'exampleTbl1' => [ 'example1ID' => 1 ],                         # Single Condition
-     'exampleTbl2' => [                                              # Multiple Conditions (default operator)
-                 'example2ID' => 9,
-                 'col2' => 'example'
+     'tbl1' => [ 'exampleID' => 1 ],                        # Single Condition
+                                                            -> SELECT * FROM tbl1 WHERE exampleID=1;
+     'tbl2' => [                                            # Multiple Conditions (default operator)
+                 'ID' => 9,                                 -> SELECT * FROM tbl2 WHERE
+                 'col2' => 'example'                           ID=9 AND col2='example';
      ],
-     'exampleTbl3' => [                                              # Multiple Conditions with custom operator
-                 '::ConditionOperator::' => 'OR',
-                 't3ID'    => 9,
-                 'default' => 1
+     'tbl3' => [                                            # Multiple Conditions with custom operator
+                 '::ConditionOperator::' => 'OR',           -> SELECT * FROM tbl3 WHERE
+                 't3ID'    => 9,                               t3ID=9 OR
+                 'default' => 1                                default=1;
      ],
-     'exampleTbl4' => [ '::CustomCondition::' => 'name = \'test\'' ] # Custom Condition string
-]</pre>
+     'tbl4' => [ '::CustomCondition::' => 'name=\'test\'' ] # Custom Condition string
+]                                                           -> SELECT * FROM tbl4 WHERE name='test';</pre>
 
 
 **Parameters:**
