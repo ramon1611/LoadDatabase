@@ -19,5 +19,8 @@
 		}
 	},
     
-	"require": {}
+	"require": {
+		"ramon1611/sqlquerybuilder": "^1.0.1.2",
+		"heimans/yadal": "^1.0.0"
+	}
 }
